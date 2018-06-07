@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AD_UNIT_ID_FOR_BANNER_TEST</key>
+	<string>ca-app-pub-3940256099942544/2934735716</string>
+	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
+	<string>ca-app-pub-3940256099942544/4411468910</string>
+	<key>CLIENT_ID</key>
+	<string>618599288987-8s54p23r5bamak4l0i071tb4f703nep2.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.618599288987-8s54p23r5bamak4l0i071tb4f703nep2</string>
+	<key>API_KEY</key>
+	<string>AIzaSyD4o-b-R1BMabVdIrZF2M5hQYg2bIB2ay8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>618599288987</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.jnad.order1798</string>
+	<key>PROJECT_ID</key>
+	<string>glassy-clarity-150017</string>
+	<key>STORAGE_BUCKET</key>
+	<string>glassy-clarity-150017.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<true></true>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<false></false>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:618599288987:ios:0ab437491b3cd27a</string>
+	<key>DATABASE_URL</key>
+	<string>https://glassy-clarity-150017.firebaseio.com</string>
+</dict>
+</plist>

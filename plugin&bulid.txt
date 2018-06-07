@@ -1,0 +1,10 @@
+cordova plugin add cordova-plugin-fcm --save
+meteor add cordova:cordova-plugin-fcm@2.1.2
+
+meteor build ~/build-output-directory --server=http://203.67.248.85:17980
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 release-unsigned.apk key
+
+cp ~/build-output-directory/android/release-unsigned.apk .
+
+./zipalign -v 4 release-unsigned.apk [New name].apk

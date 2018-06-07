@@ -1,0 +1,38 @@
+https://jnadtech.com/1798img/shopimg/
+
+chrismbeckett:toastr
+
+cordova plugin add cordova-plugin-fcm --save
+cordova plugin add cordova-plugin-ios-camera-permissions --save
+
+meteor build ../sdk --server=http://203.67.248.86:1798/
+
+meteor remove twbs:bootstrap
+meteor add cordova-plugin-fcm@2.1.2
+meteor add twbs:bootstrap@=4.0.0-alpha2
+
+window.plugins.spinnerDialog.show("", "刪除中...");
+window.plugins.spinnerDialog.hide();
+showToast('很感謝您的建議與反饋我們會儘快回覆與處理');
+
+var devicePlatform = device.platform;
+var deviceUUID = device.uuid;
+
+FCMPlugin.getToken(function (token){
+	
+});
+
+navigator.notification.confirm("",
+	function (r) {
+		switch (r) {
+			case 0:
+			case 1:
+				break;
+			case 2:
+				
+				break;
+		}
+	},
+	"確定要刪除",
+	['取消', '刪除']
+);
