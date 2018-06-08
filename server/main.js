@@ -234,7 +234,7 @@ Meteor.startup(function () {
               return a.timestamp - b.timestamp;
             });
             
-            Mongo_Shop.update({'_id': 'Dbn45YndpH4w3JhNL'},{
+            Mongo_Shop.update({'_id': _ShopElem._id},{
                 $set: {
                   wait: surplus,
                   linelist: MeteorEach

@@ -1444,7 +1444,7 @@ const _SingleOrDouble = ['套餐','單點'];
 				$('#STRadius' + _Old_STRadius).css({
 					"background-color": "#f7efea"
 				});
-				STsaucesplit.set(0);
+				RvST.set(0);
 			};
 
 			$('#STRadius' + datasetNumber).css({
