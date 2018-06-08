@@ -151,131 +151,111 @@ Meteor.startup(function () {
           return [Mongo_City.find()];
       });
 
-  var OpenTimeStamp = 0;
-  var CloseTimeStamp = 0;
-  var MixTime = "";
-  function GetOpenCloseTime(){
+  var Nowtime = 0;
+  Meteor.setInterval(function(){
+    Nowtime = Math.round(new Date().getTime()/1000.0);
     const _Shop = Mongo_Shop.find({}).fetch();
-    let NowData = new Date();
-    let Y = NowData.getFullYear();
-    let M = ('0' + ( NowData.getMonth() + 1)).substr(-2);
-    let D = ('0' + NowData.getDate()).substr(-2);
-    let H = "";
-    _Shop.forEach((elem, index)=>{
-      H = (elem.open + ":00");
-    });
-    MixTime = Y + '-' + M + '-' + D + "T" + H;
-    const second = ((60 * 60) * 8);
-    OpenTimeStamp = Math.round( new Date(MixTime) / 1000.0) - second;
-    // OpenTimeStamp = Math.round( new Date(MixTime) / 1000.0);
-    CloseTimeStamp = ( OpenTimeStamp + 32400 );
-  };
-
-  // 更新日期 
-    Meteor.setInterval(function(){
-      GetOpenCloseTime();
-      console.log("更新日期");
-    },86400000);
-
-  // 等候人數 
-    var Nowtime = 0;
-    Meteor.setInterval(function(){
-      Nowtime = Math.round(new Date().getTime()/1000.0);
-      if( Nowtime >= OpenTimeStamp){
-        const UIF = Mongo_UserInfo.find({}).fetch();
-        
-        let surplus = 0;
-        
-        // 導出全部用戶
-        UIF.forEach((UIFelem, UIFindex)=>{
-          const _UIFelem_order = UIFelem.order;
-          // 導出用戶之訂購欄位
-          _UIFelem_order.forEach((_UIFelem_orderElem, _UIFelem_orderIndex)=>{
-            if(_UIFelem_orderElem.shopid == "Dbn45YndpH4w3JhNL"){
-              
-              if( ( (_UIFelem_orderElem.timestamp) >= OpenTimeStamp ) && 
-                  ( (_UIFelem_orderElem.timestamp) <= CloseTimeStamp) ){
-
-                if( (2 == _UIFelem_orderElem.type) || 
-                    (4 == _UIFelem_orderElem.type) ) {
-                  surplus++;
-                };
-              
-              };
-
-            };
-          });
-        });
-
-        Mongo_Shop.update(
-          {'_id': 'Dbn45YndpH4w3JhNL'},
-          {$set: { wait: surplus}}
-        );
-      }// }else{
-      //   console.log("SetWaitPeople-時間錯誤...-" + Nowtime);
-      // };
-    },15000);
-
-  // 抓取符合當天時間範圍的用戶
-    Meteor.setInterval(function(){
+    _Shop.forEach((_ShopElem, _ShopIndex)=>{
       let MeteorEach = [];
-      Nowtime = Math.round(new Date().getTime()/1000.0);
-      if( Nowtime >= OpenTimeStamp){
-        const UIF = Mongo_UserInfo.find({order: { $elemMatch: {
-              $and:[{
-                timestamp: { 
-                 $gte: OpenTimeStamp
-                }},{
-                timestamp: { 
-                  $lte: CloseTimeStamp
-                }
-              }]}}}).fetch();
+      let surplus  = 0;
+      const _Open  = (Nowtime >= _ShopElem.TimeStampOpen);
+      const _Close = (Nowtime <= _ShopElem.TimeStampClose);
 
-        UIF.forEach((UIFelem, UIFindex)=>{
-            const _UIFelem_order = UIFelem.order;
-            _UIFelem_order.forEach((_UIFelem_orderElem, _UIFelem_orderIndex)=>{
-              
-              if( (_UIFelem_orderElem.shopid == "Dbn45YndpH4w3JhNL") ){
-
-                if( ( (_UIFelem_orderElem.timestamp) >= OpenTimeStamp ) && 
-                    ( (_UIFelem_orderElem.timestamp) <= CloseTimeStamp) ){
+      if(_ShopElem.type){
+        if( (_Open && _Close) ){
+          // 等候人數 導出全部用戶
+          // const WaitPeopleUIF = Mongo_UserInfo.find({}).fetch();
+          // WaitPeopleUIF.forEach((UIFelem, UIFindex)=>{
+          //   const _UIFelem_order = UIFelem.order;
+          //   // 導出用戶之訂購欄位
+          //   _UIFelem_order.forEach((_UIFelem_orderElem, _UIFelem_orderIndex)=>{
+          //     if(_UIFelem_orderElem.shopid == "Dbn45YndpH4w3JhNL"){
+                
+          //       if( ( (_UIFelem_orderElem.timestamp) >= _ShopElem.TimeStampOpen ) && 
+          //           ( (_UIFelem_orderElem.timestamp) <= _ShopElem.TimeStampClose )){
                   
-                  if( (_UIFelem_orderElem.type == 2) || 
-                      (_UIFelem_orderElem.type == 4) ){
-                    MeteorEach.push({
-                        objId: UIFelem.users_to_id,
-                        mail: UIFelem.user_school_mail_id,
-                        type: _UIFelem_orderElem.type,
-                        timestamp: _UIFelem_orderElem.timestamp
-                    });
+          //         if( (2 == _UIFelem_orderElem.type) || 
+          //             (4 == _UIFelem_orderElem.type) ) {
+          //           surplus++;
+          //         };
+                
+          //       };
+
+          //     };
+          //   });
+          // });
+          // console.log("等候人數 " + surplus);
+
+          // 抓取符合當天時間範圍的用戶
+            const TodayTimeUIF = Mongo_UserInfo.find({
+              order: { 
+                $elemMatch: {
+                  $and:[
+                    {
+                      timestamp: { 
+                        $gte: _ShopElem.TimeStampOpen
+                      }
+                    },{
+                      timestamp: { 
+                      $lte: _ShopElem.TimeStampClose
+                    }
+                  }]
+                }
+              }
+            }).fetch();
+
+            TodayTimeUIF.forEach((UIFelem, UIFindex)=>{
+                const _UIFelem_order = UIFelem.order;
+                _UIFelem_order.forEach((_UIFelem_orderElem, _UIFelem_orderIndex)=>{
+                  
+                  if( (_UIFelem_orderElem.shopid == "Dbn45YndpH4w3JhNL") ){
+
+                    if( ( (_UIFelem_orderElem.timestamp) >= _ShopElem.TimeStampOpen ) && 
+                        ( (_UIFelem_orderElem.timestamp) <= _ShopElem.TimeStampClose) ){
+                      
+                      if( (_UIFelem_orderElem.type == 2) || 
+                          (_UIFelem_orderElem.type == 4) ){
+                        MeteorEach.push({
+                            objId: UIFelem.users_to_id,
+                            mail: UIFelem.user_school_mail_id,
+                            type: _UIFelem_orderElem.type,
+                            timestamp: _UIFelem_orderElem.timestamp
+                        });
+                      };
+
+                    };
+
                   };
 
-                };
-
-              };
-
+                });
             });
-        });
 
-        MeteorEach.sort(function (a, b) {
-          return a.timestamp - b.timestamp;
-        });
+            MeteorEach.sort(function (a, b) {
+              return a.timestamp - b.timestamp;
+            });
+            
+            Mongo_Shop.update({'_id': 'Dbn45YndpH4w3JhNL'},{
+                $set: {
+                  wait: surplus,
+                  linelist: MeteorEach
+                }
+              }
+            );
+            // console.log("時間範圍 " + MeteorEach.length);
+        }else{
+          console.log("nowtime: " + Nowtime);
+          console.log("open: " + _Open);
+          console.log("close: " + _Close);
+          console.log("TimeStampOpen: " + _ShopElem.TimeStampOpen);
+          console.log("TimeStampClose: " + _ShopElem.TimeStampClose);
+        };
+      }else{
+        console.log(_ShopElem.shopname + " 尚未開店");
+      };
 
-        Mongo_Shop.update(
-          {'_id': 'Dbn45YndpH4w3JhNL'},
-          {$set: { linelist: MeteorEach}}
-        );
-      }
-      // }else{
-      //   console.log("PushLine-時間錯誤...-" + Nowtime);
-      // };
-    },30000);
-
-  GetOpenCloseTime();
-  console.log(" 當天時間 " + OpenTimeStamp);
-  console.log(" 結束時間 " + CloseTimeStamp);
-  console.log(MixTime);
-  
+    });
+  },15000);
+  console.log("十五秒後執行....")
 
   // client call Server
     Meteor.methods({

@@ -180,9 +180,11 @@ const _SingleOrDouble = ['套餐','單點'];
 											        		(err,res)=>{
 											        			if(res){
 											        				alert('註冊成功，請再次登入...');
+											        				Meteor.logout();
 											        				Router.go('post.login');
 											        			};
-											        	});
+											        		}
+											        	);
 											        };
 											    });	
 											};

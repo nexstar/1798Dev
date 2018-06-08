@@ -5,8 +5,8 @@ import './Helpers.js';
 
 	SpinnerDialogController = RouteController.extend({
 	  	onAfterAction: function () {
-		  	// window.plugins.spinnerDialog.hide();
-			// this.next();
+		  	window.plugins.spinnerDialog.hide();
+			this.next();
 		},
 	});
 

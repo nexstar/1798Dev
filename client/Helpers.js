@@ -57,10 +57,16 @@ var MeteorEach = [];
 			_UserID = Meteor.userId();
 			const _status = Meteor.status();
 			window.plugins.spinnerDialog.show("", "網路斷網中...",true);
-			if( (String(_UserID) == "null") && 
-				((check == "HOME") || (check == "LOGIN")) ) {
-				Router.go('post.login');
+
+			if( (String(_UserID) == "null") ){
+				switch(check){
+					case "HOME":
+					case "LOGIN":
+						Router.go('post.login');
+					break;
+				};
 			};
+				
 			if(_status.connected){
 				window.plugins.spinnerDialog.hide();
 			};
@@ -124,14 +130,14 @@ var MeteorEach = [];
 			const _Mongo_Shop = Mongo_Shop.find({}).fetch();
 			
 			_Mongo_Shop.forEach((elem,index)=>{
-
+				const _linelist_length = (((elem.linelist).length >= 999)?"999":(elem.linelist).length);
 				MeteorEach.push({
 					name: elem.shopname,
 					pic: elem.pic,
 					phone: elem.phone,
 					open: elem.open,
 					close: elem.close,
-					wait: ((elem.wait >= 999)?"999":elem.wait),
+					wait: _linelist_length,
 					objid: elem._id,
 					type: elem.type
 				});
