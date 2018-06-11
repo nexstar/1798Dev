@@ -1,6 +1,7 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
+import { HTTP } from 'meteor/http'
 import './Router.js';
 import './Events.js';
 import './main.html';
@@ -70,6 +71,19 @@ var MeteorEach = [];
 			if(_status.connected){
 				window.plugins.spinnerDialog.hide();
 			};
+
+			FCMPlugin.onNotification(function (data) {
+				if (data.wasTapped) {
+					//在app外面收到推播的處理方式。
+					//這裡得path必須與servic的path做配合，至於service的格式，記得參考官網
+					Router.go(data.path);
+				} else {
+					//在app裏面收到推播後的處理方式。
+					Router.go(data.path);
+					alert(data.alert);
+				}
+			});
+
 		},
 		ThreeToolBar(check){
 			// 註冊一,註冊二,忘記密碼
@@ -131,9 +145,18 @@ var MeteorEach = [];
 			
 			_Mongo_Shop.forEach((elem,index)=>{
 				const _linelist_length = (((elem.linelist).length >= 999)?"999":(elem.linelist).length);
+			    
+			    HTTP.call('GET', 'https://jnadtech.com/1798/ImgTobase64.php', {
+			    	params: { 
+			    		address: ("img/" + elem.pic)
+			    	}
+			    }, (err, res) => {
+			    	GetShop64.set(res.content);
+			    });
+
 				MeteorEach.push({
 					name: elem.shopname,
-					pic: elem.pic,
+					pic: GetShop64.get(),
 					phone: elem.phone,
 					open: elem.open,
 					close: elem.close,
@@ -151,28 +174,38 @@ var MeteorEach = [];
 	});
 
 // 通知訊息詳細
+	var GetNotif64 = new ReactiveVar("");
+	var GetShop64 = new ReactiveVar("");
+
 	Template.NotifiDetail.helpers({
 		NotifiDetailList(){
 			const Get_NotifiDetail_THIS = this;
-			const path = 'notifi.' + Get_NotifiDetail_THIS['index'] + '.read';
-			Meteor.call('UpNotifi',path,Meteor.userId());
+			Meteor.call('UpNotifi', Get_NotifiDetail_THIS['_id'], Meteor.userId());
 
 			MeteorEach = [];
 
-			const _Mongo_UserNotifi = Mongo_UserNotifi.findOne({
+			const UNotifi = Mongo_UserNotifi.find({
 										'_id':Get_NotifiDetail_THIS['_id']
-									});
+									}).fetch();
+			UNotifi.forEach((UNotifiElem, UNotifiIndex)=>{
+				let	_writings = (UNotifiElem.content).replace(/\r\n|\n|\r/g, '<br>');
+					_writings = Spacebars.SafeString(_writings);
 
-			let	_writings = (_Mongo_UserNotifi.content).replace(/\r\n|\n|\r/g, '<br>');
-				_writings = Spacebars.SafeString(_writings);
+				HTTP.call('GET', 'https://jnadtech.com/1798/ImgTobase64.php', {
+			    	params: { 
+			    		address: ("img/" + UNotifiElem.pic)
+			    	}
+			    }, (err, res) => {
+			    	GetNotif64.set(res.content);
+			    });
 
-			MeteorEach.push({
-				type: _Mongo_UserNotifi.type,
-				title: _Mongo_UserNotifi.title,
-				pic: _Mongo_UserNotifi.pic,
-				writings: _writings
+				MeteorEach.push({
+					type: UNotifiElem.type,
+					title: UNotifiElem.title,
+					pic: GetNotif64.get(),
+					writings: _writings
+				});
 			});
-
 			return MeteorEach;
 		},
 	});
@@ -182,6 +215,7 @@ var MeteorEach = [];
 	Template.Notifi.helpers({
 		NotifiList(){
 			MeteorEach = [];
+			GetNotif64.set("");
 			const UIF_notifi = Mongo_UserInfo.find({
 										'users_to_id': Meteor.userId()
 									}).fetch();

@@ -706,31 +706,43 @@ const _SingleOrDouble = ['套餐','單點'];
 				timestamp: _timestamp,
 				date: new Date()
 			};
-
 			navigator.notification.confirm("",
 				function (r) {
 					switch (r) {
 						case 0:
-						case 1:
-						break;
 						case 2:
-							window.plugins.spinnerDialog.show("", "下單進行中...",true);
-							Meteor.call('CartToInsert', _shopid, _UsersId, data, _timestamp, 
-								(err,res)=>{
-									if(res){
-										alert("完成下單，請等候商家受理.....");
-										alert("!!留意商家!!\n\n--通知(推播)--");
-										Session.set('CART',"undefined");
-										CartMoney.set(0);
-										Router.go('post.Record', {_id: 1}, {query: 'type=0'});
-									};
-								}
+						break;
+						case 1:
+							navigator.notification.confirm("",
+								function (r) {
+									switch (r) {
+										case 0:
+										case 2:
+										break;
+										case 1:
+											window.plugins.spinnerDialog.show("", "下單進行中...",true);
+											Meteor.call('CartToInsert', _shopid, _UsersId, data, _timestamp, 
+												(err,res)=>{
+													if(res){
+														alert("完成下單，請等候商家受理.....");
+														alert("!!留意商家!!\n\n--通知(推播)--");
+														Session.set('CART',"undefined");
+														CartMoney.set(0);
+														Router.go('post.Record', {_id: 1}, {query: 'type=0'});
+													};
+												}
+											);
+										break;
+									}
+								},
+								"確定要下單",
+								['確定', '取消']
 							);
 						break;
 					}
 				},
-				"確定要下單",
-				['取消', '確定']
+				"--是否同意--\n訂單受理後無法藉由\n此訂單\n(增加餐點 / 修正餐點)",
+				['同意', '不同意']
 			);
 		},
 	});
@@ -1810,7 +1822,7 @@ const _SingleOrDouble = ['套餐','單點'];
 			
 			Bought.set(0);
 
-			const UO = Mongo_UserOrder.find({'_id':RDetailInfo.id}).fetch();
+			const UO = Mongo_UserOrder.find({'_id': RDetailInfo.id}).fetch();
 
 			UO.forEach((UOelem, UOindex)=>{
 				const _UOelemFL = UOelem.foodlist;
@@ -2108,6 +2120,7 @@ const _SingleOrDouble = ['套餐','單點'];
 
 			OpenRecord.set(1);
 			Session.set('Old_BRdiv',datasetNumber);
+			Router.go('post.Record');
 		},
 	});
 

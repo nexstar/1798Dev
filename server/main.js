@@ -241,6 +241,7 @@ Meteor.startup(function () {
                 }
               }
             );
+
             // console.log("時間範圍 " + MeteorEach.length);
         }else{
           console.log("nowtime: " + Nowtime);
@@ -328,11 +329,18 @@ Meteor.startup(function () {
         return 1;
       },
       // 通知已閱讀
-      UpNotifi:(_path,_id)=>{
-        Mongo_UserInfo.update({'users_to_id': _id}, {
-          $set: {
-            [_path]: 1
+      UpNotifi:(notifiId, _id)=>{
+        Mongo_UserInfo.update({
+          'users_to_id': _id,
+          'notifi': {
+            $elemMatch: {
+              'user_notifi_id': notifiId
+            }
           }
+        },{
+            $set: {
+              "notifi.$.read" : 1
+            }
         });
         return 1;
       },
