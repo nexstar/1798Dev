@@ -68,8 +68,12 @@ import './Helpers.js';
 	Router.route('/MemberOfchangePhone', {
 		name: 'post.MemberOfchangePhone',
 		layoutTemplate: 'MainTmp',
-		data: {
-			title: '更換手機',
+		data: function() {
+			const RouteData = {
+				title: '更換手機'
+			};
+			Meteor.subscribe('UserInfo');
+			return RouteData;
 		},
 		yieldRegions: {
 		  	'MemberOfchangePhone': {to: 'plugin'},
@@ -121,7 +125,7 @@ import './Helpers.js';
 	Router.route('/Notifi', {
 		name: 'post.Notifi',
 		layoutTemplate: 'MainTmp',
-		data:()=>{
+		data:function (){
 			const obj = {
 				title: '通知訊息',
 			};
@@ -261,7 +265,7 @@ import './Helpers.js';
 	Router.route('/Member', {
 		name: 'post.Member',
 		layoutTemplate: 'MainTmp',
-		data:()=>{
+		data: function (){
 			const obj = {
 				title: '會員專區',
 			};
@@ -281,9 +285,12 @@ import './Helpers.js';
 	Router.route('/FormatPwd', {
 		name: 'post.FormatPwd',
 		layoutTemplate: 'MainTmp',
-		data: {
-			title: '重置密碼',
-			check: 'REFORGET',
+		data: function (){
+			const obj = {
+				title: '重置密碼',
+				check: 'REFORGET',
+			};
+			return obj;
 		},
 		yieldRegions: {
 			'FormatPwd': {to: 'plugin'},
@@ -294,9 +301,13 @@ import './Helpers.js';
 	Router.route('/Forget', {
 		name: 'post.Forget',
 		layoutTemplate: 'MainTmp',
-		data: {
-			title: '忘記密碼',
-			check: 'FORGET',
+		data: function (){
+			const obj = {
+				title: '忘記密碼',
+				check: 'FORGET',
+			};
+			Meteor.subscribe('UserInfo');
+			return obj;
 		},
 		yieldRegions: {
 			'Forget': {to: 'plugin'},

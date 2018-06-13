@@ -279,7 +279,6 @@ const _SingleOrDouble = ['套餐','單點'];
 	        	const _Mongo_UserInfo = Mongo_UserInfo.find({
 							        		'user_school_mail_id': _schoolemail
 							        	}).fetch();
-	        	
 	        	if( (_Mongo_UserInfo != "") ){
 
 	        		_Mongo_UserInfo.forEach((elem, index)=>{
@@ -295,7 +294,7 @@ const _SingleOrDouble = ['套餐','單點'];
 
 							tmp.$('[name=checkemail]').attr('disabled', false);
 							tmp.$('[name=emailgo]').attr('disabled', true);
-							Session.set('MeteorID',elem.users_to_id);
+							Session.set('MeteorID', elem.users_to_id);
 
 							HTTP.get(URL,(error, result) => { if (!error) {}; });
 							ForgetCode.set(TmpSMSStr);
@@ -450,22 +449,24 @@ const _SingleOrDouble = ['套餐','單點'];
 		'click [name=TransferPhone]':(evt,tmp)=>{
 			evt.preventDefault();
 
-			const ChangePhone = tmp.$('[name=ChangePhone]').val();
-			const _oldPhone = Mongo_UserInfo.findOne({
+			const NewPhone = tmp.$('[name=ChangePhone]').val();
+			const UIF = Mongo_UserInfo.findOne({
 										'users_to_id': Meteor.userId()
-									}).import.phone;
+									}).fetch();
 
-			const _newemail = ChangePhone + '@jnad1798.com';
-			const _oldemail = _oldPhone + '@jnad1798.com';
-			Meteor.call('ChangePhone', Meteor.userId(), _oldemail, _newemail, ChangePhone,
-				(err,res)=>{
-					if(res){
-						alert("手機更換已完成!!!");
-						Meteor.logout();
-						Router.go('post.login');
-					};
+			UIF.forEach((UIFElem, UIFIndex)=>{
+				const _newemail = NewPhone + '@jnad1798.com';
+				const _oldemail = UIFElem.import.phone + '@jnad1798.com';
+				Meteor.call('ChangePhone', Meteor.userId(), _oldemail, _newemail, NewPhone,
+					(err,res)=>{
+						if(res){
+							alert("手機更換已完成!!!");
+							Meteor.logout();
+							Router.go('post.login');
+						};
+					}
+				);
 			});
-
 		},
 		'click [name=BtnChangePhone]':(evt,tmp)=>{
 			evt.preventDefault();
@@ -713,30 +714,17 @@ const _SingleOrDouble = ['套餐','單點'];
 						case 2:
 						break;
 						case 1:
-							navigator.notification.confirm("",
-								function (r) {
-									switch (r) {
-										case 0:
-										case 2:
-										break;
-										case 1:
-											window.plugins.spinnerDialog.show("", "下單進行中...",true);
-											Meteor.call('CartToInsert', _shopid, _UsersId, data, _timestamp, 
-												(err,res)=>{
-													if(res){
-														alert("完成下單，請等候商家受理.....");
-														alert("!!留意商家!!\n\n--通知(推播)--");
-														Session.set('CART',"undefined");
-														CartMoney.set(0);
-														Router.go('post.Record', {_id: 1}, {query: 'type=0'});
-													};
-												}
-											);
-										break;
-									}
-								},
-								"確定要下單",
-								['確定', '取消']
+							window.plugins.spinnerDialog.show("", "下單進行中...",true);
+							Meteor.call('CartToInsert', _shopid, _UsersId, data, _timestamp, 
+								(err,res)=>{
+									if(res){
+										alert("完成下單，請等候商家受理.....");
+										alert("!!留意商家!!\n\n--通知(推播)--");
+										Session.set('CART',"undefined");
+										CartMoney.set(0);
+										Router.go('post.Record', {_id: 1}, {query: 'type=0'});
+									};
+								}
 							);
 						break;
 					}
@@ -821,7 +809,6 @@ const _SingleOrDouble = ['套餐','單點'];
 			Cart = [];
 
 			let TotalMoney = 0;
-			
 			let CartCount = 0;
 			
 			const CARTTmpArray = Session.get('CART');
