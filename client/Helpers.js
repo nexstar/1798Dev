@@ -124,7 +124,7 @@ var MeteorEach = [];
 						Color: _Color,
 						number: (_linelistIndex + 1),
 						type: _type,
-						mailid: (_linelistElem.mail).substr(-4),
+						mailid: _linelistElem.mail,
 					});
 				});
 			});
